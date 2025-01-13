@@ -30,7 +30,7 @@ export const SingleContent = ({ id, poster_path, title, name, release_date, firs
                     </CardContent>
                 </CardActionArea>
             </Card>
-            {open && <DetailModal open={open} setOpen={setOpen} id={id} media_type={media_type||type} />}
+            {open && <DetailModal open={open} setOpen={setOpen} id={id} media_type={media_type || type} />}
         </>
     );
 }

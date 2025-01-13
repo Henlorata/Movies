@@ -45,15 +45,21 @@ export const DetailModal = ({ open, setOpen, id, media_type }) => {
         <Modal open={open} onClose={handleClose} aria-labelledby="modal-title" aria-describedby="modal-description">
             <Box sx={style}>
                 <img
-                    style={{width: '100%'}}
+                    style={{ width: '100%' }}
                     src={data?.backdrop_path ? img_500 + data.backdrop_path : noPictureLandscape}
                     alt={data?.title || data?.name || 'No Image Available'}
                 />
 
-                <Typography id="modal-description" sx={{mt: 2}}>
-                    <h2>{data?.title || data?.name}</h2>
-                    <p>{data?.tagline}</p>
-                    <p>{data?.overview}</p>
+                <Typography id="modal-description" component="div" sx={{ mt: 2 }}>
+                    <Typography component="h2" variant="h5" sx={{ mb: 1 }}>
+                        {data?.title || data?.name}
+                    </Typography>
+                    <Typography component="p" variant="body1" sx={{ fontStyle: 'italic', mb: 1 }}>
+                        {data?.tagline || 'No tagline available'}
+                    </Typography>
+                    <Typography component="p" variant="body2">
+                        {data?.overview || 'No description available'}
+                    </Typography>
                 </Typography>
                 <Carousel id={id} media_type={media_type} />
                 {dataVideos?.results?.length > 0 && (

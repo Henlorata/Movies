@@ -10,7 +10,7 @@ const urlTrending = `https://api.themoviedb.org/3/trending/all/day?api_key=${imp
 export const HighlightsCarousel = () => {
     const { data, isLoading, isError, error } = useQuery({
         queryKey: ['trendingHome'],
-        queryFn: () => getData({ queryKey: [urlTrending] }),
+        queryFn: () => getData({ queryKey: [undefined, urlTrending] }), // Ensure URL is correctly passed
     });
 
     if (isLoading) return <CircularProgress />;

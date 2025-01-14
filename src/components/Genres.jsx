@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { CircularProgress, Stack, Button } from '@mui/material';
 import { SingleChip } from './SingleChip';
@@ -16,14 +16,16 @@ export const Genres = ({ type, setUrlForGenres }) => {
     }, [selectedGenres]);
 
     const urlGenres = `https://api.themoviedb.org/3/genre/${type}/list?api_key=${import.meta.env.VITE_API_KEY}`;
-    const { data, isLoading, isError, error } = useQuery({ queryKey: ['genres', urlGenres], queryFn: getData });
+    const { data, isLoading, isError, error } = useQuery({
+        queryKey: ['genres', urlGenres],
+        queryFn: getData,
+    });
 
     if (isLoading) return <CircularProgress />;
     if (isError) return <div>Error fetching data: {error.message}</div>;
 
     return (
         <div>
-            <h3 style={{ textAlign: 'center', marginBottom: '15px' }}>Filter by Genres</h3>
             <Stack
                 direction="row"
                 spacing={1}
@@ -38,13 +40,14 @@ export const Genres = ({ type, setUrlForGenres }) => {
                     />
                 ))}
             </Stack>
-            {selectedGenres.length > 0 && (
-                <div style={{ textAlign: 'center', marginTop: '15px' }}>
-                    <Button variant="outlined" onClick={() => setSelectedGenres([])}>
-                        Reset Genres
-                    </Button>
-                </div>
-            )}
+            <div style={{ textAlign: 'center', marginTop: '15px' }}>
+                <Button
+                    variant="outlined"
+                    onClick={() => setSelectedGenres([])} // Clear selectedGenres state
+                >
+                    Reset Genres
+                </Button>
+            </div>
         </div>
     );
 };

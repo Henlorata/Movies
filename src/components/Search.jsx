@@ -1,28 +1,42 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Box from '@mui/material/Box';
 import TextField from '@mui/material/TextField';
 import SearchIcon from '@mui/icons-material/Search';
 import { Button, CircularProgress, Grid, Container, Typography, Switch, FormControlLabel } from '@mui/material';
 import { useQuery } from '@tanstack/react-query';
 import { getData, img_300, imgUnavailable } from '../utils';
+import { DetailModal } from './DetailModel';
 
 export const Search = () => {
     const [searchText, setSearchText] = useState('');
     const [type, setType] = useState('movie'); // Default to movie
     const [page, setPage] = useState(1);
     const [includeAdult, setIncludeAdult] = useState(false); // Default to exclude adult content
+    const [selectedItem, setSelectedItem] = useState(null); // To handle DetailModal
 
     const urlSearch = `https://api.themoviedb.org/3/search/${type}?api_key=${import.meta.env.VITE_API_KEY}&query=${searchText}&page=${page}&include_adult=${includeAdult}`;
 
-    const { data, isLoading, isError, error } = useQuery({
+    const { data, isLoading, isError, error, refetch } = useQuery({
         queryKey: ['search', urlSearch],
         queryFn: getData,
         enabled: !!searchText, // Only fetch if there is search text
     });
 
+    // Automatically refetch when includeAdult changes
+    useEffect(() => {
+        if (searchText) {
+            refetch();
+        }
+    }, [includeAdult]);
+
     const handleSearch = (e) => {
         e.preventDefault();
         setPage(1); // Reset to the first page on new search
+        refetch(); // Fetch results on search
+    };
+
+    const handleItemClick = (item) => {
+        setSelectedItem({ id: item.id, media_type: type });
     };
 
     return (
@@ -48,13 +62,21 @@ export const Search = () => {
             <Box sx={{ display: 'flex', justifyContent: 'center', gap: 2, marginBottom: 3 }}>
                 <Button
                     variant={type === 'movie' ? 'contained' : 'outlined'}
-                    onClick={() => setType('movie')}
+                    onClick={() => {
+                        setType('movie');
+                        setPage(1); // Reset page on type change
+                        refetch(); // Refetch results
+                    }}
                 >
                     Search Movies
                 </Button>
                 <Button
                     variant={type === 'tv' ? 'contained' : 'outlined'}
-                    onClick={() => setType('tv')}
+                    onClick={() => {
+                        setType('tv');
+                        setPage(1); // Reset page on type change
+                        refetch(); // Refetch results
+                    }}
                 >
                     Search TV Series
                 </Button>
@@ -103,7 +125,13 @@ export const Search = () => {
                                 border: '1px solid #ddd',
                                 borderRadius: 2,
                                 padding: 2,
+                                cursor: 'pointer',
+                                transition: 'transform 0.2s',
+                                '&:hover': {
+                                    transform: 'scale(1.05)',
+                                },
                             }}
+                            onClick={() => handleItemClick(obj)}
                         >
                             <img
                                 src={obj.poster_path ? img_300 + obj.poster_path : imgUnavailable}
@@ -124,7 +152,10 @@ export const Search = () => {
                     <Button
                         variant="outlined"
                         disabled={page === 1}
-                        onClick={() => setPage((prev) => prev - 1)}
+                        onClick={() => {
+                            setPage((prev) => prev - 1);
+                            refetch();
+                        }}
                         sx={{ marginRight: 2 }}
                     >
                         Previous
@@ -135,11 +166,23 @@ export const Search = () => {
                     <Button
                         variant="outlined"
                         disabled={page === data.total_pages}
-                        onClick={() => setPage((prev) => prev + 1)}
+                        onClick={() => {
+                            setPage((prev) => prev + 1);
+                            refetch();
+                        }}
                     >
                         Next
                     </Button>
                 </Box>
+            )}
+
+            {selectedItem && (
+                <DetailModal
+                    open={!!selectedItem}
+                    setOpen={() => setSelectedItem(null)}
+                    id={selectedItem.id}
+                    media_type={selectedItem.media_type}
+                />
             )}
         </Container>
     );

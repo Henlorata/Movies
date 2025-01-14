@@ -7,8 +7,6 @@ export const noPicture='https://upload.wikimedia.org/wikipedia/en/6/60/No_Pictur
 export const noPictureLandscape='https://upload.wikimedia.org/wikipedia/commons/a/a6/No_picture_available_png.png'
 
 export const getData = async({queryKey})=>{
-    //console.log(queryKey); //Tömb lesz
-    //console.log(queryKey[1]); //Ebben lesz az url
     const url = queryKey[1]
     const response = await axios.get(url)
     return response.data

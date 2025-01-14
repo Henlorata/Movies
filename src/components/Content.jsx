@@ -5,10 +5,11 @@ import { CircularProgress, Grid, Box } from '@mui/material';
 import { SingleContent } from './SingleContent';
 import { ContentPagination } from './ContentPagination';
 
-export const Content = ({ url }) => {
+export const Content = ({ url, type }) => {
     const [page, setPage] = useState(1);
+
     const { isLoading, isError, error, data } = useQuery({
-        queryKey: ['trendings', `${url}&page=${page}`],
+        queryKey: ['content', `${url}&page=${page}`],
         queryFn: getData,
     });
 
@@ -20,16 +21,12 @@ export const Content = ({ url }) => {
             <Grid container spacing={2} sx={{ justifyContent: 'center', padding: '20px' }}>
                 {data.results.map((obj) => (
                     <Grid item xs={12} sm={6} md={4} lg={3} key={obj.id}>
-                        <SingleContent {...obj} />
+                        <SingleContent {...obj} type={type} />
                     </Grid>
                 ))}
             </Grid>
             <Box sx={{ display: 'flex', justifyContent: 'center', margin: '20px 0' }}>
-                <ContentPagination
-                    page={page}
-                    setPage={setPage}
-                    numberOfPage={data.total_pages}
-                />
+                <ContentPagination page={page} setPage={setPage} numberOfPage={data.total_pages} />
             </Box>
         </div>
     );

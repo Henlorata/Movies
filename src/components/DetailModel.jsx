@@ -20,11 +20,15 @@ const style = {
     p: 4,
 };
 
-export const DetailModal = ({ open, setOpen, id, media_type }) => {
-    if (!media_type || !id) return null;
+export const DetailModal = ({ open, setOpen, id, media_type, type }) => {
+    if (!id) return null;
 
-    const urlDetails = `https://api.themoviedb.org/3/${media_type}/${id}?api_key=${import.meta.env.VITE_API_KEY}`;
-    const urlVideos = `https://api.themoviedb.org/3/${media_type}/${id}/videos?api_key=${import.meta.env.VITE_API_KEY}`;
+    const resolvedMediaType = media_type || type; // Use the passed type if media_type is undefined
+
+    console.log('ID:', id, 'Media Type:', resolvedMediaType);
+
+    const urlDetails = `https://api.themoviedb.org/3/${resolvedMediaType}/${id}?api_key=${import.meta.env.VITE_API_KEY}`;
+    const urlVideos = `https://api.themoviedb.org/3/${resolvedMediaType}/${id}/videos?api_key=${import.meta.env.VITE_API_KEY}`;
 
     const { data, isLoading, isError, error } = useQuery({
         queryKey: ['details', urlDetails],
@@ -49,7 +53,6 @@ export const DetailModal = ({ open, setOpen, id, media_type }) => {
                     src={data?.backdrop_path ? img_500 + data.backdrop_path : noPictureLandscape}
                     alt={data?.title || data?.name || 'No Image Available'}
                 />
-
                 <Typography id="modal-description" component="div" sx={{ mt: 2 }}>
                     <Typography component="h2" variant="h5" sx={{ mb: 1 }}>
                         {data?.title || data?.name}
@@ -61,7 +64,7 @@ export const DetailModal = ({ open, setOpen, id, media_type }) => {
                         {data?.overview || 'No description available'}
                     </Typography>
                 </Typography>
-                <Carousel id={id} media_type={media_type} />
+                <Carousel id={id} media_type={resolvedMediaType} />
                 {dataVideos?.results?.length > 0 && (
                     <Button
                         variant="contained"

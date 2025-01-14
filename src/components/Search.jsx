@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import Box from '@mui/material/Box';
 import TextField from '@mui/material/TextField';
 import SearchIcon from '@mui/icons-material/Search';
-import { Button, CircularProgress, Grid, Container, Typography } from '@mui/material';
+import { Button, CircularProgress, Grid, Container, Typography, Switch, FormControlLabel } from '@mui/material';
 import { useQuery } from '@tanstack/react-query';
 import { getData, img_300, imgUnavailable } from '../utils';
 
@@ -10,8 +10,9 @@ export const Search = () => {
     const [searchText, setSearchText] = useState('');
     const [type, setType] = useState('movie'); // Default to movie
     const [page, setPage] = useState(1);
+    const [includeAdult, setIncludeAdult] = useState(false); // Default to exclude adult content
 
-    const urlSearch = `https://api.themoviedb.org/3/search/${type}?api_key=${import.meta.env.VITE_API_KEY}&query=${searchText}&page=${page}`;
+    const urlSearch = `https://api.themoviedb.org/3/search/${type}?api_key=${import.meta.env.VITE_API_KEY}&query=${searchText}&page=${page}&include_adult=${includeAdult}`;
 
     const { data, isLoading, isError, error } = useQuery({
         queryKey: ['search', urlSearch],
@@ -57,6 +58,19 @@ export const Search = () => {
                 >
                     Search TV Series
                 </Button>
+            </Box>
+
+            <Box sx={{ display: 'flex', justifyContent: 'center', marginBottom: 3 }}>
+                <FormControlLabel
+                    control={
+                        <Switch
+                            checked={includeAdult}
+                            onChange={(e) => setIncludeAdult(e.target.checked)}
+                            color="primary"
+                        />
+                    }
+                    label="Include Adult Content"
+                />
             </Box>
 
             {isLoading && (
